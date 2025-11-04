@@ -1,7 +1,15 @@
 package main
 
-func main()  {
-	// TODO: init config: cleanenv
+import (
+	"fmt"
+
+	"github.com/RelayServices/RelayLink/internal/config"
+)
+
+func main() {
+	cfg := config.MustLoad()
+
+	fmt.Println(cfg)
 
 	// TODO: init logger: slog
 
