@@ -7,6 +7,9 @@ import (
 	"github.com/RelayServices/RelayLink/internal/config"
 	"github.com/RelayServices/RelayLink/internal/lib/logger/sl"
 	"github.com/RelayServices/RelayLink/internal/storage/sqlite"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	mwLogger "github.com/RelayServices/RelayLink/internal/http-server/middleware/logger"
 )
 
 const (
@@ -29,9 +32,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	_ = storage
+	router := chi.NewRouter()
 
-	// TODO: init router: chi, chi render
+	router.Use(middleware.RequestID)
+	router.Use(mwLogger.New(log))
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.URLFormat)
 
 	// TODO: run server
 }
