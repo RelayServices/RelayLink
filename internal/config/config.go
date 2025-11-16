@@ -12,7 +12,7 @@ import (
 type Config struct {
 	Env         string `yaml:"env" env-default:"prod" env-oneof:"local dev prod"`
 	StoragePath string `yaml:"storage_path" env-required:"true"`
-	HTTPServer `yaml:"http_server"`
+	HTTPServer  `yaml:"http_server"`
 }
 
 type HTTPServer struct {

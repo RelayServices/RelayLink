@@ -5,11 +5,12 @@ import (
 	"os"
 
 	"github.com/RelayServices/RelayLink/internal/config"
+	"github.com/RelayServices/RelayLink/internal/http-server/handlers/url/save"
+	mwLogger "github.com/RelayServices/RelayLink/internal/http-server/middleware/logger"
 	"github.com/RelayServices/RelayLink/internal/lib/logger/sl"
 	"github.com/RelayServices/RelayLink/internal/storage/sqlite"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	mwLogger "github.com/RelayServices/RelayLink/internal/http-server/middleware/logger"
 )
 
 const (
@@ -39,6 +40,10 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
+	router.Post("/url", save.New(log, storage))
+
+	_ = storage
+
 	// TODO: run server
 }
 
@@ -53,7 +58,7 @@ func setupLogger(env string) *slog.Logger {
 	case envProd:
 		handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo})
 	default:
-		panic("unknown environment: " + env) 
+		panic("unknown environment: " + env)
 	}
 
 	return slog.New(handler)
