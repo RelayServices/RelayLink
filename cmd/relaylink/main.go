@@ -2,6 +2,7 @@ package main
 
 import (
 	"log/slog"
+	"net/http"
 	"os"
 
 	"github.com/RelayServices/RelayLink/internal/config"
@@ -33,6 +34,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	_ = storage
+	
 	router := chi.NewRouter()
 
 	router.Use(middleware.RequestID)
@@ -42,9 +45,21 @@ func main() {
 
 	router.Post("/url", save.New(log, storage))
 
-	_ = storage
+	log.Info("starting server", slog.String("address", cfg.Address))
 
-	// TODO: run server
+	srv := &http.Server{
+		Addr: cfg.Address,
+		Handler: router,
+		ReadTimeout: cfg.HTTPServer.Timeout,
+		WriteTimeout: cfg.HTTPServer.Timeout,
+		IdleTimeout: cfg.HTTPServer.IdleTimeout,
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
+		log.Error("failed to start server")
+	}
+
+	log.Error("server stopped")
 }
 
 func setupLogger(env string) *slog.Logger {
